@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: mustafais/worker
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ADDRESS
+              value: 'planner:3000'
+            - name: PORT
+              value: '8080'
+            - name: MULT
+              value: 'true'
+            - name: ADD
+              value: 'true'
+
+     
