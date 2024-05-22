@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: planner
-          image: mustafais/worker
+          image: mustafais/planner
           ports:
             - containerPort: 1337
           resources:
@@ -40,6 +40,6 @@ spec:
     app: planner
   ports:
     - protocol: TCP
-      port: 1337
+      port: 8080
       targetPort: 1337
   type: LoadBalancer

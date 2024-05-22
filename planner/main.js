@@ -2,7 +2,7 @@ require('dotenv').config()
 const fetch = require('node-fetch')
 const express = require('express')
 
-const port = process.env.PORT || 3000
+const port = 1337
 const nbTasks = parseInt(process.env.TASKS) || 20
 
 const randInt = (min, max) => Math.floor(Math.random() * (max - min)) + min
@@ -12,9 +12,7 @@ const args = () => ({ a: randInt(0, 40), b: randInt(0, 40) })
 const generateTasks = (i) =>
   new Array(i).fill(1).map((_) => ({ type: taskType(), args: args() }))
 
-let workers = [
-  // { url: 'http://localhost:8080', id: '' }
-]
+let workers = ['http://localhost:8080']
 
 const app = express()
 app.use(express.json())

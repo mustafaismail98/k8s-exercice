@@ -86,6 +86,8 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-  // register()
+  console.log("PLANNER " + PLANNER)
+  console.log("ADRESSE " + ADDRESS)
+   register()
   console.log(`Worker ${id} listening at http://localhost:${port}`)
 })

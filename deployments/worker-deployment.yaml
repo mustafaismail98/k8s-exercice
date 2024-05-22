@@ -1,11 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: worker
-  labels:
-    app: worker
+  name: worker-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: worker
@@ -18,15 +16,42 @@ spec:
         - name: worker
           image: mustafais/worker
           ports:
-            - containerPort: 8080
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              cpu: 500m
+              memory: 1Gi
           env:
-            - name: ADDRESS
-              value: 'planner:3000'
+            - name: PLANNER
+              value: 'http://planner-service.default.svc.cluster.local:8080'
             - name: PORT
-              value: '8080'
+              value: '3000'
             - name: MULT
               value: 'true'
             - name: ADD
               value: 'true'
+            - name: ADDRESS
+              value: 'http://worker-service.default.svc.cluster.local:1337'
 
-     
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-service
+spec:
+  selector:
+    app: worker
+  ports:
+    - protocol: TCP
+      port: 1337
+      targetPort: 3000
+  type: LoadBalancer
