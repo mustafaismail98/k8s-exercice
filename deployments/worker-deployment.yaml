@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: worker-mult-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: worker-mult
@@ -61,7 +61,7 @@ kind: Deployment
 metadata:
   name: worker-add-deployment
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: worker-add
@@ -107,6 +107,64 @@ metadata:
 spec:
   selector:
     app: worker-add
+  ports:
+    - protocol: TCP
+      port: 1337
+      targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker-general-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker-general
+  template:
+    metadata:
+      labels:
+        app: worker-general
+    spec:
+      containers:
+        - name: worker
+          image: mustafais/worker
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              memory: "1Gi"
+            requests:
+              cpu: 500m
+              memory: 1Gi
+          env:
+            - name: PLANNER
+              value: 'http://planner-service.default.svc.cluster.local:8080'
+            - name: PORT
+              value: '3000'
+            - name: MULT
+              value: 'true'
+            - name: ADD
+              value: 'true'
+            - name: ADDRESS
+              value: 'http://worker-general-service.default.svc.cluster.local:1337'
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worker-general-service
+spec:
+  selector:
+    app: worker-general
   ports:
     - protocol: TCP
       port: 1337
